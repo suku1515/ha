@@ -1,0 +1,1036 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  Compass, 
+  HelpCircle, 
+  TrendingUp, 
+  RefreshCw, 
+  CheckCircle, 
+  XCircle, 
+  BookOpen, 
+  Award, 
+  Sparkles, 
+  ArrowRight,
+  Eye
+} from 'lucide-react';
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState('observer'); // observer, graph, quiz, concept
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-indigo-500 selection:text-white">
+      {/* Header */}
+      <header className="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-indigo-600/20 text-indigo-400 rounded-xl border border-indigo-500/30">
+              <Compass className="w-6 h-6 animate-spin-slow" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                허블 법칙 계산연습 시뮬레이터
+              </h1>
+              <p className="text-xs text-slate-400">지구과학 I - 외부 은하와 우주 팽창 마스터하기</p>
+            </div>
+          </div>
+          
+          {/* Navigation Tab Buttons */}
+          <nav className="flex bg-slate-950 p-1 rounded-xl border border-slate-800/80 w-full sm:w-auto overflow-x-auto">
+            <button
+              onClick={() => setActiveTab('observer')}
+              className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
+                activeTab === 'observer'
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <Eye className="w-3.5 h-3.5" />
+              가상 우주 관측기
+            </button>
+            <button
+              onClick={() => setActiveTab('graph')}
+              className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
+                activeTab === 'graph'
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <TrendingUp className="w-3.5 h-3.5" />
+              그래프 실험실
+            </button>
+            <button
+              onClick={() => setActiveTab('quiz')}
+              className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
+                activeTab === 'quiz'
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <HelpCircle className="w-3.5 h-3.5" />
+              계산연습 퀴즈
+            </button>
+            <button
+              onClick={() => setActiveTab('concept')}
+              className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
+                activeTab === 'concept'
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              개념 요약노트
+            </button>
+          </nav>
+        </div>
+      </header>
+
+      {/* Main Content Area */}
+      <main className="max-w-6xl mx-auto px-4 py-6">
+        {activeTab === 'observer' && <ObserverTab />}
+        {activeTab === 'graph' && <GraphTab />}
+        {activeTab === 'quiz' && <QuizTab />}
+        {activeTab === 'concept' && <ConceptTab />}
+      </main>
+
+      {/* Footer */}
+      <footer className="border-t border-slate-900 bg-slate-950 py-6 mt-12 text-center text-xs text-slate-500">
+        <div className="max-w-6xl mx-auto px-4">
+          <p>© 허블 법칙 마스터 시뮬레이터 - 고등학교 지구과학 I 학습용</p>
+          <p className="mt-1">상수 설정: 빛의 속도 $c = 3 \times 10^5 \text{ km/s}$를 적용하였습니다.</p>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+// ==========================================
+// 1. OBSERVER TAB (가상 우주 관측기)
+// ==========================================
+function ObserverTab() {
+  const [distance, setDistance] = useState(100); // Mpc (10 to 500)
+  const [hubbleConstant, setHubbleConstant] = useState(70); // km/s/Mpc (50 to 90)
+  
+  // 기준 흡수선 파장 (nm)
+  const restLines = [410.2, 434.0, 486.1, 656.3]; // 수소 흡수선계열 (H-delta, H-gamma, H-beta, H-alpha)
+  const lineLabels = ['Hδ', 'Hγ', 'Hβ', 'Hα'];
+  const colors = ['#a78bfa', '#60a5fa', '#34d399', '#f87171']; // 파장에 어울리는 색상 매핑
+  
+  const speedOfLight = 300000; // km/s
+  const velocity = distance * hubbleConstant; // v = H * d
+  const redshift = velocity / speedOfLight; // z = v / c
+  
+  // 은하 그래픽 스케일 결정
+  const galaxySize = Math.max(40, 160 - (distance * 0.25));
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      {/* Left panel: Controls & Stats */}
+      <div className="lg:col-span-4 space-y-6">
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
+          <h2 className="text-lg font-bold mb-4 flex items-center gap-2 text-indigo-400">
+            <Compass className="w-5 h-5 text-indigo-400" />
+            관측 제어 패널
+          </h2>
+          
+          {/* Slider: Distance */}
+          <div className="space-y-2 mb-6">
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-slate-400 font-medium">은하까지의 거리 ($d$)</span>
+              <span className="text-indigo-400 font-bold text-base">{distance} Mpc</span>
+            </div>
+            <input 
+              type="range" 
+              min="10" 
+              max="500" 
+              step="5"
+              value={distance} 
+              onChange={(e) => setDistance(Number(e.target.value))}
+              className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+            />
+            <div className="flex justify-between text-[10px] text-slate-500">
+              <span>가까운 은하 (10 Mpc)</span>
+              <span>먼 은하 (500 Mpc)</span>
+            </div>
+          </div>
+
+          {/* Slider: Hubble Constant */}
+          <div className="space-y-2 mb-6">
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-slate-400 font-medium">허블 상수 ($H$)</span>
+              <span className="text-purple-400 font-bold text-base">{hubbleConstant} km/s/Mpc</span>
+            </div>
+            <input 
+              type="range" 
+              min="50" 
+              max="90" 
+              step="1"
+              value={hubbleConstant} 
+              onChange={(e) => setHubbleConstant(Number(e.target.value))}
+              className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-purple-500"
+            />
+            <div className="flex justify-between text-[10px] text-slate-500">
+              <span>팽창 느림 (50)</span>
+              <span>팽창 빠름 (90)</span>
+            </div>
+          </div>
+
+          {/* Quick formula card */}
+          <div className="p-3 bg-slate-950 border border-slate-800/80 rounded-xl space-y-2 text-xs">
+            <div className="text-slate-400 font-semibold mb-1">💡 오늘의 물리 법칙 공식</div>
+            <div className="flex justify-between border-b border-slate-900 pb-1.5">
+              <span>후퇴 속도 ($v$)</span>
+              <span className="text-indigo-300 font-mono">v = H × d</span>
+            </div>
+            <div className="flex justify-between border-b border-slate-900 pb-1.5">
+              <span>적색편이량 ($z$)</span>
+              <span className="text-indigo-300 font-mono">z = Δλ / λ₀ = v / c</span>
+            </div>
+            <div className="flex justify-between">
+              <span>빛의 속도 ($c$)</span>
+              <span className="text-amber-400 font-mono">300,000 km/s</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Real-time Calculation Panel */}
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
+          <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider">실시간 관측 측정값</h3>
+          
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800/50">
+              <span className="text-[11px] text-slate-400 block mb-1">후퇴 속도 ($v$)</span>
+              <strong className="text-lg text-emerald-400 font-mono">
+                {velocity.toLocaleString()} <span className="text-xs">km/s</span>
+              </strong>
+            </div>
+            <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800/50">
+              <span className="text-[11px] text-slate-400 block mb-1">적색편이값 ($z$)</span>
+              <strong className="text-lg text-amber-400 font-mono">
+                {redshift.toFixed(5)}
+              </strong>
+            </div>
+          </div>
+
+          <div className="bg-indigo-950/20 border border-indigo-500/20 rounded-xl p-4 text-xs text-indigo-300 space-y-1.5">
+            <span className="font-bold flex items-center gap-1.5 text-indigo-400">
+              <Sparkles className="w-3.5 h-3.5" />
+              천체 물리학자 가이드
+            </span>
+            <p className="leading-relaxed">
+              은하가 멀어질수록 흡수선이 빨간색 쪽(우측)으로 더 크게 이동합니다. 이 현상을 <strong>적색편이</strong>라고 부르며, 은하가 우리로부터 더 빨리 멀어지고 있음을 의미합니다.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Right panel: Visualization (Galaxy & Spectrum) */}
+      <div className="lg:col-span-8 space-y-6">
+        {/* Galaxy Virtual Viewport */}
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 relative overflow-hidden h-[240px] flex flex-col justify-between shadow-xl">
+          <div className="absolute inset-0 opacity-20 pointer-events-none" style={{
+            backgroundImage: 'radial-gradient(circle, #ffffff 1px, transparent 1px)',
+            backgroundSize: '24px 24px'
+          }}></div>
+          
+          <div className="flex justify-between items-start z-10">
+            <span className="text-xs bg-slate-950 px-2.5 py-1 rounded-full border border-slate-800 text-slate-400 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></span>
+              가상 우주망원경 뷰
+            </span>
+            <span className="text-xs text-slate-400">거리: {distance} Mpc</span>
+          </div>
+
+          {/* Deep Space View with Earth & Galaxy */}
+          <div className="relative flex-1 flex items-center justify-between px-10">
+            {/* Our Galaxy / Earth */}
+            <div className="flex flex-col items-center gap-1 z-10">
+              <div className="w-12 h-12 rounded-full bg-blue-500 border-2 border-indigo-300 shadow-[0_0_15px_rgba(59,130,246,0.5)] flex items-center justify-center text-[9px] font-bold text-white text-center">
+                우리 은하
+              </div>
+              <span className="text-[10px] text-slate-400">관측자 (0 Mpc)</span>
+            </div>
+
+            {/* Connecting Expanding Line */}
+            <div className="absolute left-16 right-16 top-1/2 -translate-y-1/2 border-t-2 border-dashed border-slate-800 flex items-center justify-center">
+              <div className="bg-slate-950/90 text-[10px] text-slate-400 border border-slate-800 px-2 py-0.5 rounded-md -translate-y-1/2">
+                거리 $d$ = {distance} Mpc
+              </div>
+              {/* Recession Velocity Vector Arrow */}
+              <div 
+                className="absolute right-0 bg-red-500/80 text-[10px] text-white px-2 py-0.5 rounded-md flex items-center gap-1 font-mono transition-all"
+                style={{
+                  width: `${Math.min(130, 40 + velocity * 0.003)}px`,
+                  transform: 'translateX(100%)',
+                }}
+              >
+                <span>v</span>
+                <span className="ml-auto font-bold">➔</span>
+              </div>
+            </div>
+
+            {/* Targeted Galaxy */}
+            <div className="flex flex-col items-center gap-2 z-10 transition-all duration-300" style={{ transform: `scale(${galaxySize / 100})` }}>
+              <div 
+                className="rounded-full bg-gradient-to-tr from-purple-600 via-pink-500 to-amber-400 shadow-[0_0_30px_rgba(236,72,153,0.4)] animate-spin-slow flex items-center justify-center cursor-pointer"
+                style={{ width: '80px', height: '80px' }}
+              >
+                {/* Spiral Arms Graphic inside */}
+                <div className="w-full h-full rounded-full border-2 border-white/20 relative">
+                  <div className="absolute w-12 h-2 bg-white/40 blur-[1px] top-1/2 left-1/4 -translate-y-1/2 rounded-full rotate-45"></div>
+                  <div className="absolute w-12 h-2 bg-white/40 blur-[1px] top-1/2 left-1/4 -translate-y-1/2 rounded-full -rotate-45"></div>
+                  <div className="absolute w-4 h-4 bg-yellow-100 rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 shadow-inner"></div>
+                </div>
+              </div>
+              <span className="text-xs font-bold text-purple-200 text-center tracking-wide block whitespace-nowrap">
+                가상 외부 은하
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Spectrum Analyzer Graph */}
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+          <h3 className="text-sm font-bold text-slate-300 flex items-center gap-2">
+            <BookOpen className="w-4 h-4 text-emerald-400" />
+            스펙트럼 적색편이 비교분석기 (정지 상태 vs 관측 상태)
+          </h3>
+
+          <div className="space-y-4">
+            {/* 1. Reference Spectrum (Rest Frame) */}
+            <div className="space-y-1.5">
+              <div className="flex justify-between items-center text-xs">
+                <span className="font-semibold text-blue-400 flex items-center gap-1">
+                  🟢 기준 스펙트럼 (실험실 정지 상태, $v = 0$)
+                </span>
+                <span className="text-slate-500 text-[11px]">단위: 나노미터(nm)</span>
+              </div>
+              
+              <div className="relative h-10 w-full rounded-lg overflow-hidden border border-slate-800 flex bg-gradient-to-r from-violet-600 via-blue-500 via-green-500 via-yellow-400 to-red-600">
+                {/* Spectral Lines overlay */}
+                {restLines.map((wave, idx) => {
+                  // Map nm (380 to 750) to percentage (0% to 100%)
+                  const pos = ((wave - 380) / (750 - 380)) * 100;
+                  return (
+                    <div 
+                      key={idx}
+                      className="absolute top-0 bottom-0 w-1 bg-black shadow-lg flex flex-col justify-end items-center"
+                      style={{ left: `${pos}%` }}
+                    >
+                      <span className="absolute top-1 text-[9px] bg-slate-900/90 text-white px-1 py-0.5 rounded scale-75">
+                        {lineLabels[idx]}
+                      </span>
+                      <span className="absolute bottom-1 text-[8px] text-white font-mono scale-90">
+                        {wave}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* 2. Observed Redshifted Spectrum */}
+            <div className="space-y-1.5 pt-2">
+              <div className="flex justify-between items-center text-xs">
+                <span className="font-semibold text-red-400 flex items-center gap-1">
+                  🔴 관측된 스펙트럼 (적색편이 발생, $z = {redshift.toFixed(5)}$)
+                </span>
+                <span className="text-emerald-400 font-bold font-mono">
+                  속도 {velocity.toLocaleString()} km/s 로 후퇴 중
+                </span>
+              </div>
+              
+              <div className="relative h-10 w-full rounded-lg overflow-hidden border border-slate-800 flex bg-gradient-to-r from-violet-600 via-blue-500 via-green-500 via-yellow-400 to-red-600">
+                {/* Redshifted Lines overlay */}
+                {restLines.map((wave, idx) => {
+                  // Calculate redshifted wavelength: lambda_obs = lambda_0 * (1 + z)
+                  const obsWave = wave * (1 + redshift);
+                  // Map nm (380 to 750) to percentage (0% to 100%)
+                  const pos = ((obsWave - 380) / (750 - 380)) * 100;
+
+                  // If pos goes beyond the visible spectrum, hide or fade out
+                  if (pos > 100) return null;
+
+                  return (
+                    <div 
+                      key={idx}
+                      className="absolute top-0 bottom-0 w-1.5 bg-black border-x border-red-500/30 flex flex-col justify-end items-center transition-all duration-300"
+                      style={{ left: `${pos}%` }}
+                    >
+                      <span className="absolute top-1 text-[9px] bg-red-950/90 text-red-300 font-bold px-1 py-0.5 rounded scale-75 border border-red-500/20">
+                        {lineLabels[idx]}
+                      </span>
+                      <span className="absolute bottom-1 text-[8px] text-amber-200 font-mono font-bold scale-90">
+                        {obsWave.toFixed(1)}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Delta calculation walkthrough */}
+            <div className="p-3.5 bg-slate-950 border border-slate-800/60 rounded-xl space-y-1.5">
+              <h4 className="text-xs font-semibold text-indigo-400">💡 특정 수소선 비교 (Hα - 붉은색 흡수선)</h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs">
+                <div className="bg-slate-900/50 p-2 rounded">
+                  <span className="text-slate-400">기준 파장 ($\lambda_0$)</span>
+                  <div className="font-bold text-slate-200 font-mono">{restLines[3]} nm</div>
+                </div>
+                <div className="bg-slate-900/50 p-2 rounded">
+                  <span className="text-slate-400">관측 파장 ($\lambda$)</span>
+                  <div className="font-bold text-red-400 font-mono">{(restLines[3] * (1 + redshift)).toFixed(2)} nm</div>
+                </div>
+                <div className="bg-slate-900/50 p-2 rounded">
+                  <span className="text-slate-400">이동량 ($\Delta\lambda$)</span>
+                  <div className="font-bold text-amber-400 font-mono">{(restLines[3] * redshift).toFixed(2)} nm</div>
+                </div>
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1">
+                적색편이 공식 대입: $z = \frac{\Delta\lambda}{\lambda_0} = \frac{{(restLines[3] * redshift).toFixed(2)}}{{{restLines[3]}}} = {redshift.toFixed(5)}$ ➔ 후퇴속도 $v = z \times c = {velocity.toLocaleString()} \text{ km/s}$
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ==========================================
+// 2. GRAPH TAB (허블 상수 그래프 실험실)
+// ==========================================
+function GraphTab() {
+  // 가상의 은하들 데이터 설정 (X: 거리 Mpc, Y: 실제 속도 km/s + 약간의 관측 노이즈)
+  const [galaxies, setGalaxies] = useState([
+    { id: 1, name: '은하 A', d: 80, v: 5400 },
+    { id: 2, name: '은하 B', d: 150, v: 11100 },
+    { id: 3, name: '은하 C', d: 240, v: 16200 },
+    { id: 4, name: '은하 D', d: 320, v: 22800 },
+    { id: 5, name: '은하 E', d: 410, v: 29100 },
+    { id: 6, name: '은하 F', d: 480, v: 33200 },
+  ]);
+
+  // 사용자가 임의로 조정 가능한 허블 상수 추정치
+  const [guessH, setGuessH] = useState(50);
+  const correctH = 70; // 문제 정답 허블상수
+
+  const handleRecalculate = () => {
+    // 새로운 가상 우주 생성 (랜덤 노이즈 부여)
+    const newH = Math.floor(Math.random() * 20) + 60; // 60~80 사이로 설정
+    const updated = galaxies.map(g => {
+      // 오차율 -5% ~ +5% 부여
+      const noise = 1 + (Math.random() * 0.1 - 0.05);
+      return {
+        ...g,
+        v: Math.round(g.d * newH * noise / 100) * 100
+      };
+    });
+    setGalaxies(updated);
+  };
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      {/* Left panel */}
+      <div className="lg:col-span-4 space-y-6">
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
+          <h2 className="text-lg font-bold mb-3 flex items-center gap-2 text-indigo-400">
+            <TrendingUp className="w-5 h-5" />
+            허블 상수 측정 미션
+          </h2>
+          <p className="text-xs text-slate-400 leading-relaxed mb-4">
+            가상의 외부 은하 6개를 관측한 결과가 아래 표에 나열되어 있습니다. 허블 법칙 $v = H d$에 따라, 그래프에서 <strong>기울기(허블 상수 H)</strong>를 조절하여 실제 데이터 점들과 가장 완벽하게 일치하는 직선을 만들어보세요!
+          </p>
+
+          <button 
+            onClick={handleRecalculate}
+            className="w-full flex items-center justify-center gap-2 bg-slate-950 border border-slate-800 hover:border-slate-700 py-2.5 rounded-xl text-xs font-semibold text-slate-300 transition-all mb-5"
+          >
+            <RefreshCw className="w-3.5 h-3.5" />
+            새로운 가상 우주 생성 (데이터 리셋)
+          </button>
+
+          {/* Galaxy data table */}
+          <div className="overflow-hidden border border-slate-800 rounded-xl bg-slate-950">
+            <table className="w-full text-xs text-left">
+              <thead className="bg-slate-900 text-slate-400 border-b border-slate-800 text-[10px] uppercase">
+                <tr>
+                  <th className="p-3">관측 대상</th>
+                  <th className="p-3">거리 $d$ (Mpc)</th>
+                  <th className="p-3">후퇴 속도 $v$ (km/s)</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-800/50">
+                {galaxies.map(g => (
+                  <tr key={g.id} className="hover:bg-slate-900/30">
+                    <td className="p-3 font-semibold text-slate-300">{g.name}</td>
+                    <td className="p-3 font-mono text-indigo-300">{g.d}</td>
+                    <td className="p-3 font-mono text-emerald-300">{g.v.toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Slope guess controls */}
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
+          <div className="space-y-1">
+            <h3 className="text-sm font-semibold text-slate-200">기울기(허블 상수) 튜닝기</h3>
+            <p className="text-xs text-slate-400">데이터와 가상 라인을 일치시켜 보세요.</p>
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex justify-between items-center">
+              <span className="text-xs text-slate-400">추정한 허블 상수 $H$ 기울기:</span>
+              <strong className="text-indigo-400 text-lg font-mono">{guessH} <span className="text-xs">km/s/Mpc</span></strong>
+            </div>
+            
+            <input 
+              type="range" 
+              min="30" 
+              max="110" 
+              step="1"
+              value={guessH} 
+              onChange={(e) => setGuessH(Number(e.target.value))}
+              className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+            />
+          </div>
+
+          {/* Educational Insights card */}
+          <div className="p-3 bg-slate-950 border border-slate-800/80 rounded-xl space-y-2 text-xs">
+            <div className="text-amber-400 font-bold flex items-center gap-1">
+              <Sparkles className="w-3.5 h-3.5" />
+              그래프의 과학적 의미
+            </div>
+            <ul className="list-disc pl-4 space-y-1 text-slate-400 text-[11px]">
+              <li>기울기가 가파를수록 우주가 더 빠르게 팽창하는 상태입니다.</li>
+              <li>우주의 나이 예측치 $T \approx \frac{1}{H}$ 입니다.</li>
+              <li>기울기 $H$가 {guessH}일 때, 우주의 가상 나이는 대략 <strong className="text-indigo-300">{(9.78 * 100 / guessH).toFixed(1)}억 년</strong>이 됩니다.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      {/* Right panel: Scatter Plot Graph inside SVG */}
+      <div className="lg:col-span-8 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
+        <div className="flex justify-between items-center mb-4">
+          <div>
+            <h3 className="text-sm font-bold text-slate-200">거리-후퇴 속도 그래프 (Hubble Diagram)</h3>
+            <p className="text-[11px] text-slate-500">X축: 은하의 거리 $d$ (Mpc) | Y축: 후퇴 속도 $v$ (km/s)</p>
+          </div>
+          <span className="text-xs bg-slate-950 px-2.5 py-1 rounded-full border border-slate-800 text-indigo-400 font-bold">
+            $H$ 기울기 직선: $y = {guessH}x$
+          </span>
+        </div>
+
+        {/* SVG Drawing Canvas */}
+        <div className="relative bg-slate-950 rounded-xl border border-slate-800/80 p-4 overflow-hidden aspect-video">
+          <svg className="w-full h-full" viewBox="0 0 600 350">
+            {/* Grid Lines */}
+            {[50, 100, 150, 200, 250, 300].map((yVal) => (
+              <line 
+                key={`grid-y-${yVal}`}
+                x1="50" 
+                y1={300 - yVal} 
+                x2="560" 
+                y2={300 - yVal} 
+                stroke="#1e293b" 
+                strokeWidth="1" 
+                strokeDasharray="4"
+              />
+            ))}
+            {[100, 200, 300, 400, 500].map((xVal) => {
+              const xPos = 50 + (xVal / 500) * 500;
+              return (
+                <line 
+                  key={`grid-x-${xVal}`}
+                  x1={xPos} 
+                  y1="30" 
+                  x2={xPos} 
+                  y2="300" 
+                  stroke="#1e293b" 
+                  strokeWidth="1" 
+                  strokeDasharray="4"
+                />
+              );
+            })}
+
+            {/* X and Y Axes */}
+            <line x1="50" y1="300" x2="560" y2="300" stroke="#475569" strokeWidth="2" /> {/* X Axis */}
+            <line x1="50" y1="30" x2="50" y2="300" stroke="#475569" strokeWidth="2" />  {/* Y Axis */}
+
+            {/* Axis labels */}
+            {/* Y axis velocity tags (0 to 40,000 km/s) */}
+            {[0, 10000, 20000, 30000, 40000].map((labelVal) => {
+              const yPos = 300 - (labelVal / 40000) * 250;
+              return (
+                <text key={labelVal} x="10" y={yPos + 4} fill="#94a3b8" fontSize="10" textAnchor="start">
+                  {labelVal.toLocaleString()}
+                </text>
+              );
+            })}
+
+            {/* X axis distance tags (0 to 500 Mpc) */}
+            {[0, 100, 200, 300, 400, 500].map((labelVal) => {
+              const xPos = 50 + (labelVal / 500) * 500;
+              return (
+                <text key={labelVal} x={xPos} y="318" fill="#94a3b8" fontSize="10" textAnchor="middle">
+                  {labelVal}
+                </text>
+              );
+            })}
+
+            {/* Axis Titles */}
+            <text x="560" y="335" fill="#cbd5e1" fontSize="11" textAnchor="end" fontWeight="bold">
+              거리 d (Mpc) ➔
+            </text>
+            <text x="15" y="20" fill="#cbd5e1" fontSize="11" textAnchor="start" fontWeight="bold">
+              ↑ 후퇴 속도 v (km/s)
+            </text>
+
+            {/* Line of guessH: y = guessH * x */}
+            {/* Calculation for SVG endpoint: For x = 500 Mpc, y = guessH * 500 */}
+            {(() => {
+              const maxValX = 500;
+              const maxValY = guessH * maxValX;
+              // Map (500, maxValY) to SVG coordinate space
+              const endX = 50 + 500; // 550
+              const endY = 300 - (maxValY / 40000) * 250;
+              return (
+                <line 
+                  x1="50" 
+                  y1="300" 
+                  x2={endX} 
+                  y2={Math.max(20, endY)} 
+                  stroke="#6366f1" 
+                  strokeWidth="3.5" 
+                  strokeLinecap="round"
+                  className="transition-all duration-150"
+                  opacity="0.85"
+                />
+              );
+            })()}
+
+            {/* Plot Galaxy Dots */}
+            {galaxies.map((g) => {
+              // Convert actual physical values into SVG space coordinates
+              // X: 50 + (d / 500) * 500
+              // Y: 300 - (v / 40000) * 250
+              const cx = 50 + (g.d / 500) * 500;
+              const cy = 300 - (g.v / 40000) * 250;
+              
+              // 허블 법칙 직선상과의 차이 계산 (적합도 시각적 표현)
+              const predictedV = guessH * g.d;
+              const diff = Math.abs(g.v - predictedV);
+              const isClose = diff < 1500; // 잘 들어맞는지 여부
+
+              return (
+                <g key={g.id} className="group cursor-pointer">
+                  {/* Subtle outer glow if close */}
+                  <circle 
+                    cx={cx} 
+                    cy={cy} 
+                    r="9" 
+                    fill={isClose ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.1)'} 
+                    className="animate-pulse"
+                  />
+                  <circle 
+                    cx={cx} 
+                    cy={cy} 
+                    r="5" 
+                    fill={isClose ? '#10b981' : '#f43f5e'} 
+                    stroke="#1e293b"
+                    strokeWidth="1.5"
+                  />
+                  {/* Info balloon on hover */}
+                  <title>{`${g.name}: 거리=${g.d}Mpc, 속도=${g.v}km/s`}</title>
+                </g>
+              );
+            })}
+          </svg>
+        </div>
+
+        {/* Alignment assessment */}
+        <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-slate-950 rounded-xl border border-slate-800">
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-3 w-3 relative">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-indigo-500"></span>
+            </span>
+            <p className="text-xs text-slate-300">
+              초록색 점은 현재 가정한 기울기 근방에 매칭된 은하를 나타내고, 빨간색 점은 오차가 큰 은하입니다.
+            </p>
+          </div>
+          
+          {/* Quick analysis output */}
+          <div className="text-xs font-semibold text-right">
+            {guessH >= 65 && guessH <= 75 ? (
+              <span className="text-emerald-400 flex items-center gap-1.5">
+                <CheckCircle className="w-4 h-4" />
+                정교한 매칭 성공! 허블 상수는 대략 70 km/s/Mpc 내외입니다.
+              </span>
+            ) : (
+              <span className="text-amber-400">
+                기울기를 조금 더 조정해 적절한 직선을 그려보세요.
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ==========================================
+// 3. QUIZ TAB (계산연습 퀴즈)
+// ==========================================
+function QuizTab() {
+  const [problem, setProblem] = useState(null);
+  const [userAnswer, setUserAnswer] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+  const [isCorrect, setIsCorrect] = useState(false);
+  const [score, setScore] = useState(0);
+  const [attempts, setAttempts] = useState(0);
+
+  // 퀴즈 타입 리스트 생성기
+  const generateProblem = () => {
+    setUserAnswer('');
+    setSubmitted(false);
+    
+    const types = ['velocity', 'distance', 'hubble_c', 'redshift', 'wavelength'];
+    const selectedType = types[Math.floor(Math.random() * types.length)];
+    
+    // 기본 파라미터 무작위 빌딩 (고교 수준 실제 기출 데이터 기준치)
+    const H = [60, 70, 75, 80][Math.floor(Math.random() * 4)];
+    const d = [40, 80, 100, 120, 160, 200, 300][Math.floor(Math.random() * 7)];
+    const v = H * d;
+    const c = 300000; // km/s
+    const z = v / c;
+    const lambda0 = [400, 500, 600][Math.floor(Math.random() * 3)]; // 기준 파장
+    const deltaLambda = lambda0 * z;
+    const lambdaObs = lambda0 + deltaLambda;
+
+    let qText = '';
+    let answer = 0;
+    let explanation = [];
+
+    switch(selectedType) {
+      case 'velocity':
+        qText = `어느 외부 은하까지의 거리가 ${d} Mpc이고, 이 우주의 허블 상수가 ${H} km/s/Mpc이다. 이 외부 은하의 후퇴 속도 v는 몇 km/s인가?`;
+        answer = v;
+        explanation = [
+          `허블 법칙 공식 $v = H \\times d$를 활용합니다.`,
+          `대입: $v = ${H} \\text{ (허블 상수)} \\times ${d} \\text{ (거리 Mpc)}$`,
+          `계산: $v = ${v.toLocaleString()} \\text{ km/s}$입니다.`
+        ];
+        break;
+
+      case 'distance':
+        qText = `허블 상수가 ${H} km/s/Mpc인 우주에서 어떤 은하를 관측하였더니, 후퇴 속도가 ${v.toLocaleString()} km/s였다. 이 은하까지의 거리 d는 몇 Mpc인가?`;
+        answer = d;
+        explanation = [
+          `허블 법칙 공식 $v = H \\times d$를 거리에 대해 변형하면 $d = \\frac{v}{H}$가 됩니다.`,
+          `대입: $d = \\frac{${v.toLocaleString()} \\text{ km/s}}{${H} \\text{ km/s/Mpc}}$`,
+          `계산: $d = ${d} \\text{ Mpc}$입니다.`
+        ];
+        break;
+
+      case 'hubble_c':
+        qText = `거리가 ${d} Mpc인 은하가 우리로부터 ${v.toLocaleString()} km/s의 속도로 후퇴하고 있다. 관측에 기초한 이 우주의 허블 상수 H는 몇 km/s/Mpc인가?`;
+        answer = H;
+        explanation = [
+          `허블 법칙 공식 $v = H \\times d$를 허블 상수에 대해 정리하면 $H = \\frac{v}{d}$가 됩니다.`,
+          `대입: $H = \\frac{${v.toLocaleString()} \\text{ km/s}}{${d} \\text{ Mpc}}$`,
+          `계산: $H = ${H} \\text{ km/s/Mpc}$입니다.`
+        ];
+        break;
+
+      case 'redshift':
+        qText = `정지 상태의 실험실에서 파장이 ${lambda0} nm인 흡수선이 어떤 은하의 스펙트럼에서는 ${lambdaObs.toFixed(2)} nm로 관측되었다. 이 은하의 적색편이 값 z는 얼마인가? (소수점 아래 넷째 자리까지 입력하세요)`;
+        answer = parseFloat(z.toFixed(4));
+        explanation = [
+          `적색편이 정의 공식 $z = \\frac{\\Delta \\lambda}{\\lambda_0}$를 적용합니다.`,
+          `이동량 계산: $\\Delta \\lambda = ${lambdaObs.toFixed(2)} - ${lambda0} = ${deltaLambda.toFixed(2)} \\text{ nm}$`,
+          `대입: $z = \\frac{${deltaLambda.toFixed(2)}}{${lambda0}}$`,
+          `계산: $z = ${z.toFixed(4)}$ 입니다.`
+        ];
+        break;
+
+      case 'wavelength':
+        qText = `어느 은하의 후퇴 속도가 ${v.toLocaleString()} km/s 이다. 이 은하에서 정지 시 파장이 ${lambda0} nm인 수소 흡수선을 관측했을 때, 이동된 파량 변화량 Δλ는 몇 nm인가? (빛의 속도 c = 300,000 km/s)`;
+        answer = parseFloat(deltaLambda.toFixed(2));
+        explanation = [
+          `적색편이량 식 $z = \\frac{v}{c} = \\frac{\\Delta \\lambda}{\\lambda_0}$ 관계를 이용합니다.`,
+          `우선 적색편이 값 $z = \\frac{v}{c} = \\frac{${v.toLocaleString()}}{300,000} = ${z.toFixed(4)}$ 입니다.`,
+          `파장 변화량 $\\Delta \\lambda = z \\times \\lambda_0$ 이므로,`,
+          `대입: $\\Delta \\lambda = ${z.toFixed(4)} \\times ${lambda0} \\text{ nm}$`,
+          `계산: $\\Delta \\lambda = ${deltaLambda.toFixed(2)} \\text{ nm}$ 입니다.`
+        ];
+        break;
+      
+      default:
+        break;
+    }
+
+    setProblem({ type: selectedType, qText, answer, explanation });
+  };
+
+  useEffect(() => {
+    generateProblem();
+  }, []);
+
+  const handleCheckAnswer = () => {
+    if (!userAnswer.trim()) return;
+
+    const parsedUser = parseFloat(userAnswer);
+    const parsedCorrect = parseFloat(problem.answer);
+
+    // 오차 한도 설정 (적색편이 소수점 계산 오차 보정)
+    const margin = problem.type === 'redshift' ? 0.0002 : 0.5;
+    const correct = Math.abs(parsedUser - parsedCorrect) <= margin;
+
+    setIsCorrect(correct);
+    setSubmitted(true);
+    setAttempts(prev => prev + 1);
+    if (correct) {
+      setScore(prev => prev + 1);
+    }
+  };
+
+  if (!problem) return null;
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      {/* Quiz Area */}
+      <div className="lg:col-span-8 space-y-6">
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6">
+          <div className="flex justify-between items-center border-b border-slate-800 pb-4">
+            <span className="text-xs bg-indigo-900/60 text-indigo-300 font-bold px-3 py-1 rounded-full border border-indigo-500/20">
+              문제 유형: {
+                problem.type === 'velocity' ? '후퇴속도 구하기' :
+                problem.type === 'distance' ? '은하 거리 구하기' :
+                problem.type === 'hubble_c' ? '허블 상수 산출' :
+                problem.type === 'redshift' ? '적색편이계수 z 계산' : '파장 이동량'
+              }
+            </span>
+            <div className="flex items-center gap-2 text-xs text-slate-400">
+              <span className="flex items-center gap-1 text-emerald-400 font-semibold">
+                <Award className="w-4 h-4" /> 정답률: {attempts > 0 ? `${Math.round((score / attempts) * 100)}%` : '0%'}
+              </span>
+              <span>({score} / {attempts} 성공)</span>
+            </div>
+          </div>
+
+          {/* Question Text */}
+          <div className="space-y-4">
+            <h3 className="text-base sm:text-lg font-medium leading-relaxed text-slate-200">
+              Q. {problem.qText}
+            </h3>
+            
+            <div className="text-[11px] text-slate-500 bg-slate-950 p-2.5 rounded-lg border border-slate-800/80">
+              💡 <strong>힌트:</strong> {
+                problem.type === 'redshift' ? '적색편이 = (관측파장 - 기준파장) / 기준파장' :
+                problem.type === 'wavelength' ? 'Δλ = (v / c) * λ₀ 입니다.' : '허블 법칙 v = H * d 식을 요리조리 변형해 해결해보세요!'
+              }
+            </div>
+          </div>
+
+          {/* User Input & Submit */}
+          <div className="pt-4 flex flex-col sm:flex-row items-stretch gap-3">
+            <input 
+              type="number" 
+              placeholder="숫자 입력 (예: 5600, 150)" 
+              value={userAnswer}
+              onChange={(e) => setUserAnswer(e.target.value)}
+              disabled={submitted}
+              className="flex-1 bg-slate-950 border border-slate-800 hover:border-slate-700 focus:border-indigo-500 rounded-xl px-4 py-3 text-slate-200 font-mono text-base focus:outline-none transition-all disabled:opacity-50"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleCheckAnswer();
+              }}
+            />
+            
+            {!submitted ? (
+              <button
+                onClick={handleCheckAnswer}
+                disabled={!userAnswer.trim()}
+                className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-bold px-6 py-3 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20"
+              >
+                정답 확인하기
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            ) : (
+              <button
+                onClick={generateProblem}
+                className="bg-slate-800 hover:bg-slate-700 text-white font-bold px-6 py-3 rounded-xl transition-all flex items-center justify-center gap-2"
+              >
+                다음 문제 도전
+                <RefreshCw className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+
+          {/* Result Alert message */}
+          {submitted && (
+            <div className={`p-4 rounded-xl border flex items-start gap-3 animate-fade-in ${
+              isCorrect 
+                ? 'bg-emerald-950/30 border-emerald-500/20 text-emerald-300' 
+                : 'bg-red-950/30 border-red-500/20 text-red-300'
+            }`}>
+              {isCorrect ? (
+                <CheckCircle className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+              ) : (
+                <XCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+              )}
+              <div className="space-y-1">
+                <strong className="text-sm font-bold block">
+                  {isCorrect ? '정답입니다! 완벽해요 👏' : `아쉽네요! 입력한 값과 오차가 있습니다.`}
+                </strong>
+                <p className="text-xs opacity-90">
+                  실제 정답: <span className="font-mono font-bold underline">{problem.answer}</span>
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Detailed Solutions (Show after submission) */}
+        {submitted && (
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+            <h4 className="text-sm font-bold text-slate-300 flex items-center gap-2 border-b border-slate-800 pb-2">
+              <BookOpen className="w-4 h-4 text-indigo-400" />
+              선생님의 친절한 단계별 풀이 해설
+            </h4>
+            <div className="space-y-3">
+              {problem.explanation.map((step, idx) => (
+                <div key={idx} className="flex gap-2 text-xs text-slate-300 leading-relaxed">
+                  <span className="text-indigo-400 font-bold">Step {idx + 1}.</span>
+                  <p>{step}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Right panel: Formula Cheat Sheet & Stats */}
+      <div className="lg:col-span-4 space-y-6">
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
+          <h3 className="text-sm font-bold text-slate-200">우주 공식 요약 컨닝페이퍼</h3>
+          <p className="text-xs text-slate-400 leading-relaxed">
+            허블 법칙 문제 풀이를 위한 핵심 열쇠 세 가지입니다.
+          </p>
+
+          <div className="space-y-3">
+            <div className="p-3 bg-slate-950 rounded-xl border border-slate-800/80">
+              <span className="text-[10px] text-slate-400 block mb-0.5">후퇴 속도 공식 (Hubble Law)</span>
+              <strong className="text-sm text-indigo-300 font-mono">v = H × d</strong>
+              <p className="text-[10px] text-slate-500 mt-1">v: 후퇴속도(km/s), H: 허블 상수, d: 외부은하 거리(Mpc)</p>
+            </div>
+
+            <div className="p-3 bg-slate-950 rounded-xl border border-slate-800/80">
+              <span className="text-[10px] text-slate-400 block mb-0.5">적색편이(z) 정의 공식</span>
+              <strong className="text-sm text-amber-300 font-mono">z = Δλ / λ₀ = v / c</strong>
+              <p className="text-[10px] text-slate-500 mt-1">Δλ: 이동량, λ₀: 정지 파장, c: 빛의 속도(3×10⁵ km/s)</p>
+            </div>
+
+            <div className="p-3 bg-slate-950 rounded-xl border border-slate-800/80">
+              <span className="text-[10px] text-slate-400 block mb-0.5">우주의 나이 산출 공식</span>
+              <strong className="text-sm text-emerald-300 font-mono">T ≈ 1 / H</strong>
+              <p className="text-[10px] text-slate-500 mt-1">단위 변환 주의! 1 Mpc ≈ 3.08 × 10¹⁹ km</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ==========================================
+// 4. CONCEPT TAB (개념 요약노트)
+// ==========================================
+function ConceptTab() {
+  return (
+    <div className="max-w-4xl mx-auto bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl space-y-8">
+      {/* Title */}
+      <div className="border-b border-slate-800 pb-5">
+        <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+          지구과학 I 교과서 핵심 요약: 허블 법칙과 우주 팽창
+        </h2>
+        <p className="text-xs sm:text-sm text-slate-400 mt-1">
+          수능 및 모의고사에 빈출되는 개념을 일목요연하게 정리했습니다.
+        </p>
+      </div>
+
+      {/* Grid of contents */}
+      <div className="space-y-6">
+        {/* Concept 1 */}
+        <section className="space-y-3">
+          <h3 className="text-base sm:text-lg font-bold text-slate-200 flex items-center gap-2">
+            <span className="w-5 h-5 rounded-md bg-indigo-600/20 text-indigo-400 flex items-center justify-center font-bold text-xs">1</span>
+            허블 법칙 (Hubble's Law)
+          </h3>
+          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed pl-7">
+            에드윈 허블은 외부 은하들을 관측하여 은하들의 <strong>후퇴 속도($v$)</strong>가 은하까지의 <strong>거리($d$)</strong>에 비례한다는 사실을 발견했습니다. 이를 수식으로 나타낸 것이 바로 <strong>허블 법칙</strong>입니다.
+          </p>
+          <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 max-w-md mx-auto my-3 text-center">
+            <strong className="text-lg sm:text-xl text-indigo-400 font-mono block">v = H × d</strong>
+            <span className="text-[11px] text-slate-400 mt-1 block">
+              v = 후퇴 속도 (km/s) &nbsp;|&nbsp; d = 외부 은하의 거리 (Mpc) &nbsp;|&nbsp; H = 허블 상수 (km/s/Mpc)
+            </span>
+          </div>
+        </section>
+
+        {/* Concept 2 */}
+        <section className="space-y-3">
+          <h3 className="text-base sm:text-lg font-bold text-slate-200 flex items-center gap-2">
+            <span className="w-5 h-5 rounded-md bg-indigo-600/20 text-indigo-400 flex items-center justify-center font-bold text-xs">2</span>
+            적색편이 (Redshift, $z$)
+          </h3>
+          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed pl-7">
+            은하가 우리로부터 멀어질 때 방출된 전자기파(빛)의 파장이 길어져 스펙트럼 흡수선이 빨간색 방향으로 이동하는 현상입니다. 이 편이량($\Delta\lambda$)의 원래 파장($\lambda_0$)에 대한 비율을 적색편이량($z$)이라 정의합니다.
+          </p>
+          <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 max-w-md mx-auto my-3 text-center">
+            <strong className="text-lg sm:text-xl text-amber-400 font-mono block">z = Δλ / λ₀ = v / c</strong>
+            <span className="text-[11px] text-slate-400 mt-1 block">
+              Δλ = 파장 변화량 &nbsp;|&nbsp; λ₀ = 고유 파장 &nbsp;|&nbsp; v = 후퇴 속도 &nbsp;|&nbsp; c = 빛의 속도 (300,000 km/s)
+            </span>
+          </div>
+        </section>
+
+        {/* Concept 3 */}
+        <section className="space-y-3">
+          <h3 className="text-base sm:text-lg font-bold text-slate-200 flex items-center gap-2">
+            <span className="w-5 h-5 rounded-md bg-indigo-600/20 text-indigo-400 flex items-center justify-center font-bold text-xs">3</span>
+            우주의 나이와 우주의 크기 산출
+          </h3>
+          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed pl-7">
+            우주가 한 점(빅뱅)에서 시작되어 일정한 속도(허블 상수 H)로 계속해서 평평하게 팽창해 왔다고 가정하면, 허블 상수의 역수로 우주의 나이를 어림짐작할 수 있습니다.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+            <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 text-center">
+              <span className="text-slate-400 text-xs block mb-1">⏰ 우주의 나이 ($T$)</span>
+              <strong className="text-lg text-emerald-400 font-mono">T = 1 / H</strong>
+              <p className="text-[10px] text-slate-500 mt-2">허블 상수가 커질수록 우주의 나이는 젊게 계산됩니다.</p>
+            </div>
+            <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 text-center">
+              <span className="text-slate-400 text-xs block mb-1">🌌 관측 가능한 우주의 크기 ($R$)</span>
+              <strong className="text-lg text-rose-400 font-mono">R = c / H</strong>
+              <p className="text-[10px] text-slate-500 mt-2">후퇴속도가 빛의 속도($c$)와 같아지는 한계 거리를 의미합니다.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      {/* Advanced Quiz Tip box */}
+      <div className="mt-6 p-4 bg-indigo-950/20 border border-indigo-500/20 rounded-xl space-y-2">
+        <h4 className="text-sm font-bold text-indigo-400 flex items-center gap-1.5">
+          <Sparkles className="w-4 h-4" />
+          시험을 지배하는 꿀팁!
+        </h4>
+        <ul className="list-disc pl-4 text-xs text-indigo-300 space-y-1 leading-relaxed">
+          <li><strong>단위 변환 문제:</strong> 문제에서 미터(m), 킬로미터(km), 메가파섹(Mpc) 단위를 혼동하여 출제하는 경우가 많습니다. $1\text{ Mpc} \approx 3.08 \times 10^{19}\text{ km}$ 임을 꼭 확인해 두세요.</li>
+          <li><strong>비율 관계 파악:</strong> "은하 A가 은하 B보다 적색편이가 2배 크다" ➔ 후퇴속도가 2배 빠르다 ➔ 우리로부터 거리가 2배 멀다는 뜻입니다. 공식의 비례 관계를 직관적으로 떠올리는 훈련이 최고입니다!</li>
+        </ul>
+      </div>
+    </div>
+  );
+}
