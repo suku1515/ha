@@ -95,7 +95,7 @@ export default function App() {
       <footer className="border-t border-slate-900 bg-slate-950 py-6 mt-12 text-center text-xs text-slate-500">
         <div className="max-w-6xl mx-auto px-4">
           <p>© 허블 법칙 마스터 시뮬레이터 - 고등학교 지구과학 I 학습용</p>
-          <p className="mt-1">상수 설정: 빛의 속도 $c = 3 \times 10^5 \text{ km/s}$를 적용하였습니다.</p>
+          <p className="mt-1">상수 설정: 빛의 속도 c = 3 x 10⁵ km/s를 적용하였습니다.</p>
         </div>
       </footer>
     </div>
@@ -112,7 +112,6 @@ function ObserverTab() {
   // 기준 흡수선 파장 (nm)
   const restLines = [410.2, 434.0, 486.1, 656.3]; // 수소 흡수선계열 (H-delta, H-gamma, H-beta, H-alpha)
   const lineLabels = ['Hδ', 'Hγ', 'Hβ', 'Hα'];
-  const colors = ['#a78bfa', '#60a5fa', '#34d399', '#f87171']; // 파장에 어울리는 색상 매핑
   
   const speedOfLight = 300000; // km/s
   const velocity = distance * hubbleConstant; // v = H * d
@@ -134,7 +133,7 @@ function ObserverTab() {
           {/* Slider: Distance */}
           <div className="space-y-2 mb-6">
             <div className="flex justify-between items-center text-sm">
-              <span className="text-slate-400 font-medium">은하까지의 거리 ($d$)</span>
+              <span className="text-slate-400 font-medium">은하까지의 거리 (d)</span>
               <span className="text-indigo-400 font-bold text-base">{distance} Mpc</span>
             </div>
             <input 
@@ -155,7 +154,7 @@ function ObserverTab() {
           {/* Slider: Hubble Constant */}
           <div className="space-y-2 mb-6">
             <div className="flex justify-between items-center text-sm">
-              <span className="text-slate-400 font-medium">허블 상수 ($H$)</span>
+              <span className="text-slate-400 font-medium">허블 상수 (H)</span>
               <span className="text-purple-400 font-bold text-base">{hubbleConstant} km/s/Mpc</span>
             </div>
             <input 
@@ -177,15 +176,15 @@ function ObserverTab() {
           <div className="p-3 bg-slate-950 border border-slate-800/80 rounded-xl space-y-2 text-xs">
             <div className="text-slate-400 font-semibold mb-1">💡 오늘의 물리 법칙 공식</div>
             <div className="flex justify-between border-b border-slate-900 pb-1.5">
-              <span>후퇴 속도 ($v$)</span>
+              <span>후퇴 속도 (v)</span>
               <span className="text-indigo-300 font-mono">v = H × d</span>
             </div>
             <div className="flex justify-between border-b border-slate-900 pb-1.5">
-              <span>적색편이량 ($z$)</span>
+              <span>적색편이량 (z)</span>
               <span className="text-indigo-300 font-mono">z = Δλ / λ₀ = v / c</span>
             </div>
             <div className="flex justify-between">
-              <span>빛의 속도 ($c$)</span>
+              <span>빛의 속도 (c)</span>
               <span className="text-amber-400 font-mono">300,000 km/s</span>
             </div>
           </div>
@@ -197,13 +196,13 @@ function ObserverTab() {
           
           <div className="grid grid-cols-2 gap-3">
             <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800/50">
-              <span className="text-[11px] text-slate-400 block mb-1">후퇴 속도 ($v$)</span>
+              <span className="text-[11px] text-slate-400 block mb-1">후퇴 속도 (v)</span>
               <strong className="text-lg text-emerald-400 font-mono">
                 {velocity.toLocaleString()} <span className="text-xs">km/s</span>
               </strong>
             </div>
             <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800/50">
-              <span className="text-[11px] text-slate-400 block mb-1">적색편이값 ($z$)</span>
+              <span className="text-[11px] text-slate-400 block mb-1">적색편이값 (z)</span>
               <strong className="text-lg text-amber-400 font-mono">
                 {redshift.toFixed(5)}
               </strong>
@@ -252,7 +251,7 @@ function ObserverTab() {
             {/* Connecting Expanding Line */}
             <div className="absolute left-16 right-16 top-1/2 -translate-y-1/2 border-t-2 border-dashed border-slate-800 flex items-center justify-center">
               <div className="bg-slate-950/90 text-[10px] text-slate-400 border border-slate-800 px-2 py-0.5 rounded-md -translate-y-1/2">
-                거리 $d$ = {distance} Mpc
+                거리 d = {distance} Mpc
               </div>
               {/* Recession Velocity Vector Arrow */}
               <div 
@@ -299,7 +298,7 @@ function ObserverTab() {
             <div className="space-y-1.5">
               <div className="flex justify-between items-center text-xs">
                 <span className="font-semibold text-blue-400 flex items-center gap-1">
-                  🟢 기준 스펙트럼 (실험실 정지 상태, $v = 0$)
+                  🟢 기준 스펙트럼 (실험실 정지 상태, v = 0)
                 </span>
                 <span className="text-slate-500 text-[11px]">단위: 나노미터(nm)</span>
               </div>
@@ -331,7 +330,7 @@ function ObserverTab() {
             <div className="space-y-1.5 pt-2">
               <div className="flex justify-between items-center text-xs">
                 <span className="font-semibold text-red-400 flex items-center gap-1">
-                  🔴 관측된 스펙트럼 (적색편이 발생, $z = {redshift.toFixed(5)}$)
+                  🔴 관측된 스펙트럼 (적색편이 발생, z = {redshift.toFixed(5)})
                 </span>
                 <span className="text-emerald-400 font-bold font-mono">
                   속도 {velocity.toLocaleString()} km/s 로 후퇴 중
@@ -372,20 +371,20 @@ function ObserverTab() {
               <h4 className="text-xs font-semibold text-indigo-400">💡 특정 수소선 비교 (Hα - 붉은색 흡수선)</h4>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs">
                 <div className="bg-slate-900/50 p-2 rounded">
-                  <span className="text-slate-400">기준 파장 ($\lambda_0$)</span>
+                  <span className="text-slate-400">기준 파장 (λ₀)</span>
                   <div className="font-bold text-slate-200 font-mono">{restLines[3]} nm</div>
                 </div>
                 <div className="bg-slate-900/50 p-2 rounded">
-                  <span className="text-slate-400">관측 파장 ($\lambda$)</span>
+                  <span className="text-slate-400">관측 파장 (λ)</span>
                   <div className="font-bold text-red-400 font-mono">{(restLines[3] * (1 + redshift)).toFixed(2)} nm</div>
                 </div>
                 <div className="bg-slate-900/50 p-2 rounded">
-                  <span className="text-slate-400">이동량 ($\Delta\lambda$)</span>
+                  <span className="text-slate-400">이동량 (Δλ)</span>
                   <div className="font-bold text-amber-400 font-mono">{(restLines[3] * redshift).toFixed(2)} nm</div>
                 </div>
               </div>
               <p className="text-[11px] text-slate-500 mt-1">
-                적색편이 공식 대입: $z = \frac{\Delta\lambda}{\lambda_0} = \frac{{(restLines[3] * redshift).toFixed(2)}}{{{restLines[3]}}} = {redshift.toFixed(5)}$ ➔ 후퇴속도 $v = z \times c = {velocity.toLocaleString()} \text{ km/s}$
+                적색편이 공식 대입: z = Δλ / λ₀ = {(restLines[3] * redshift).toFixed(2)} / {restLines[3]} = {redshift.toFixed(5)} ➔ 후퇴속도 v = z × c = {velocity.toLocaleString()} km/s
               </p>
             </div>
           </div>
@@ -411,7 +410,6 @@ function GraphTab() {
 
   // 사용자가 임의로 조정 가능한 허블 상수 추정치
   const [guessH, setGuessH] = useState(50);
-  const correctH = 70; // 문제 정답 허블상수
 
   const handleRecalculate = () => {
     // 새로운 가상 우주 생성 (랜덤 노이즈 부여)
@@ -437,7 +435,7 @@ function GraphTab() {
             허블 상수 측정 미션
           </h2>
           <p className="text-xs text-slate-400 leading-relaxed mb-4">
-            가상의 외부 은하 6개를 관측한 결과가 아래 표에 나열되어 있습니다. 허블 법칙 $v = H d$에 따라, 그래프에서 <strong>기울기(허블 상수 H)</strong>를 조절하여 실제 데이터 점들과 가장 완벽하게 일치하는 직선을 만들어보세요!
+            가상의 외부 은하 6개를 관측한 결과가 아래 표에 나열되어 있습니다. 허블 법칙 v = H × d 에 따라, 그래프에서 <strong>기울기(허블 상수 H)</strong>를 조절하여 실제 데이터 점들과 가장 완벽하게 일치하는 직선을 만들어보세요!
           </p>
 
           <button 
@@ -454,8 +452,8 @@ function GraphTab() {
               <thead className="bg-slate-900 text-slate-400 border-b border-slate-800 text-[10px] uppercase">
                 <tr>
                   <th className="p-3">관측 대상</th>
-                  <th className="p-3">거리 $d$ (Mpc)</th>
-                  <th className="p-3">후퇴 속도 $v$ (km/s)</th>
+                  <th className="p-3">거리 d (Mpc)</th>
+                  <th className="p-3">후퇴 속도 v (km/s)</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/50">
@@ -480,7 +478,7 @@ function GraphTab() {
 
           <div className="space-y-2">
             <div className="flex justify-between items-center">
-              <span className="text-xs text-slate-400">추정한 허블 상수 $H$ 기울기:</span>
+              <span className="text-xs text-slate-400">추정한 허블 상수 H 기울기:</span>
               <strong className="text-indigo-400 text-lg font-mono">{guessH} <span className="text-xs">km/s/Mpc</span></strong>
             </div>
             
@@ -503,8 +501,8 @@ function GraphTab() {
             </div>
             <ul className="list-disc pl-4 space-y-1 text-slate-400 text-[11px]">
               <li>기울기가 가파를수록 우주가 더 빠르게 팽창하는 상태입니다.</li>
-              <li>우주의 나이 예측치 $T \approx \frac{1}{H}$ 입니다.</li>
-              <li>기울기 $H$가 {guessH}일 때, 우주의 가상 나이는 대략 <strong className="text-indigo-300">{(9.78 * 100 / guessH).toFixed(1)}억 년</strong>이 됩니다.</li>
+              <li>우주의 나이 예측치는 대략 T = 1 / H 입니다.</li>
+              <li>기울기 H가 {guessH}일 때, 우주의 가상 나이는 대략 <strong className="text-indigo-300">{(9.78 * 100 / guessH).toFixed(1)}억 년</strong>이 됩니다.</li>
             </ul>
           </div>
         </div>
@@ -515,10 +513,10 @@ function GraphTab() {
         <div className="flex justify-between items-center mb-4">
           <div>
             <h3 className="text-sm font-bold text-slate-200">거리-후퇴 속도 그래프 (Hubble Diagram)</h3>
-            <p className="text-[11px] text-slate-500">X축: 은하의 거리 $d$ (Mpc) | Y축: 후퇴 속도 $v$ (km/s)</p>
+            <p className="text-[11px] text-slate-500">X축: 은하의 거리 d (Mpc) | Y축: 후퇴 속도 v (km/s)</p>
           </div>
           <span className="text-xs bg-slate-950 px-2.5 py-1 rounded-full border border-slate-800 text-indigo-400 font-bold">
-            $H$ 기울기 직선: $y = {guessH}x$
+            H 기울기 직선: y = {guessH}x
           </span>
         </div>
 
@@ -588,7 +586,6 @@ function GraphTab() {
             </text>
 
             {/* Line of guessH: y = guessH * x */}
-            {/* Calculation for SVG endpoint: For x = 500 Mpc, y = guessH * 500 */}
             {(() => {
               const maxValX = 500;
               const maxValY = guessH * maxValX;
@@ -613,12 +610,10 @@ function GraphTab() {
             {/* Plot Galaxy Dots */}
             {galaxies.map((g) => {
               // Convert actual physical values into SVG space coordinates
-              // X: 50 + (d / 500) * 500
-              // Y: 300 - (v / 40000) * 250
               const cx = 50 + (g.d / 500) * 500;
               const cy = 300 - (g.v / 40000) * 250;
               
-              // 허블 법칙 직선상과의 차이 계산 (적합도 시각적 표현)
+              // 허블 법칙 직선상과의 차이 계산
               const predictedV = guessH * g.d;
               const diff = Math.abs(g.v - predictedV);
               const isClose = diff < 1500; // 잘 들어맞는지 여부
@@ -718,9 +713,9 @@ function QuizTab() {
         qText = `어느 외부 은하까지의 거리가 ${d} Mpc이고, 이 우주의 허블 상수가 ${H} km/s/Mpc이다. 이 외부 은하의 후퇴 속도 v는 몇 km/s인가?`;
         answer = v;
         explanation = [
-          `허블 법칙 공식 $v = H \\times d$를 활용합니다.`,
-          `대입: $v = ${H} \\text{ (허블 상수)} \\times ${d} \\text{ (거리 Mpc)}$`,
-          `계산: $v = ${v.toLocaleString()} \\text{ km/s}$입니다.`
+          `허블 법칙 공식 v = H × d 를 활용합니다.`,
+          `대입: v = ${H} (허블 상수) × ${d} (거리 Mpc)`,
+          `계산: v = ${v.toLocaleString()} km/s 입니다.`
         ];
         break;
 
@@ -728,9 +723,9 @@ function QuizTab() {
         qText = `허블 상수가 ${H} km/s/Mpc인 우주에서 어떤 은하를 관측하였더니, 후퇴 속도가 ${v.toLocaleString()} km/s였다. 이 은하까지의 거리 d는 몇 Mpc인가?`;
         answer = d;
         explanation = [
-          `허블 법칙 공식 $v = H \\times d$를 거리에 대해 변형하면 $d = \\frac{v}{H}$가 됩니다.`,
-          `대입: $d = \\frac{${v.toLocaleString()} \\text{ km/s}}{${H} \\text{ km/s/Mpc}}$`,
-          `계산: $d = ${d} \\text{ Mpc}$입니다.`
+          `허블 법칙 공식 v = H × d 를 거리에 대해 변형하면 d = v / H 가 됩니다.`,
+          `대입: d = ${v.toLocaleString()} km/s / ${H} km/s/Mpc`,
+          `계산: d = ${d} Mpc 입니다.`
         ];
         break;
 
@@ -738,9 +733,9 @@ function QuizTab() {
         qText = `거리가 ${d} Mpc인 은하가 우리로부터 ${v.toLocaleString()} km/s의 속도로 후퇴하고 있다. 관측에 기초한 이 우주의 허블 상수 H는 몇 km/s/Mpc인가?`;
         answer = H;
         explanation = [
-          `허블 법칙 공식 $v = H \\times d$를 허블 상수에 대해 정리하면 $H = \\frac{v}{d}$가 됩니다.`,
-          `대입: $H = \\frac{${v.toLocaleString()} \\text{ km/s}}{${d} \\text{ Mpc}}$`,
-          `계산: $H = ${H} \\text{ km/s/Mpc}$입니다.`
+          `허블 법칙 공식 v = H × d 를 허블 상수에 대해 정리하면 H = v / d 가 됩니다.`,
+          `대입: H = ${v.toLocaleString()} km/s / ${d} Mpc`,
+          `계산: H = ${H} km/s/Mpc 입니다.`
         ];
         break;
 
@@ -748,10 +743,10 @@ function QuizTab() {
         qText = `정지 상태의 실험실에서 파장이 ${lambda0} nm인 흡수선이 어떤 은하의 스펙트럼에서는 ${lambdaObs.toFixed(2)} nm로 관측되었다. 이 은하의 적색편이 값 z는 얼마인가? (소수점 아래 넷째 자리까지 입력하세요)`;
         answer = parseFloat(z.toFixed(4));
         explanation = [
-          `적색편이 정의 공식 $z = \\frac{\\Delta \\lambda}{\\lambda_0}$를 적용합니다.`,
-          `이동량 계산: $\\Delta \\lambda = ${lambdaObs.toFixed(2)} - ${lambda0} = ${deltaLambda.toFixed(2)} \\text{ nm}$`,
-          `대입: $z = \\frac{${deltaLambda.toFixed(2)}}{${lambda0}}$`,
-          `계산: $z = ${z.toFixed(4)}$ 입니다.`
+          `적색편이 정의 공식 z = Δλ / λ₀ 를 적용합니다.`,
+          `이동량 계산: Δλ = ${lambdaObs.toFixed(2)} - ${lambda0} = ${deltaLambda.toFixed(2)} nm`,
+          `대입: z = ${deltaLambda.toFixed(2)} / ${lambda0}`,
+          `계산: z = ${z.toFixed(4)} 입니다.`
         ];
         break;
 
@@ -759,11 +754,11 @@ function QuizTab() {
         qText = `어느 은하의 후퇴 속도가 ${v.toLocaleString()} km/s 이다. 이 은하에서 정지 시 파장이 ${lambda0} nm인 수소 흡수선을 관측했을 때, 이동된 파량 변화량 Δλ는 몇 nm인가? (빛의 속도 c = 300,000 km/s)`;
         answer = parseFloat(deltaLambda.toFixed(2));
         explanation = [
-          `적색편이량 식 $z = \\frac{v}{c} = \\frac{\\Delta \\lambda}{\\lambda_0}$ 관계를 이용합니다.`,
-          `우선 적색편이 값 $z = \\frac{v}{c} = \\frac{${v.toLocaleString()}}{300,000} = ${z.toFixed(4)}$ 입니다.`,
-          `파장 변화량 $\\Delta \\lambda = z \\times \\lambda_0$ 이므로,`,
-          `대입: $\\Delta \\lambda = ${z.toFixed(4)} \\times ${lambda0} \\text{ nm}$`,
-          `계산: $\\Delta \\lambda = ${deltaLambda.toFixed(2)} \\text{ nm}$ 입니다.`
+          `적색편이량 식 z = v / c = Δλ / λ₀ 관계를 이용합니다.`,
+          `우선 적색편이 값 z = v / c = ${v.toLocaleString()} / 300,000 = ${z.toFixed(4)} 입니다.`,
+          `파장 변화량 Δλ = z × λ₀ 이므로,`,
+          `대입: Δλ = ${z.toFixed(4)} × ${lambda0} nm`,
+          `계산: Δλ = ${deltaLambda.toFixed(2)} nm 입니다.`
         ];
         break;
       
@@ -892,7 +887,7 @@ function QuizTab() {
           )}
         </div>
 
-        {/* Detailed Solutions (Show after submission) */}
+        {/* Detailed Solutions */}
         {submitted && (
           <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
             <h4 className="text-sm font-bold text-slate-300 flex items-center gap-2 border-b border-slate-800 pb-2">
@@ -969,12 +964,12 @@ function ConceptTab() {
             허블 법칙 (Hubble's Law)
           </h3>
           <p className="text-xs sm:text-sm text-slate-300 leading-relaxed pl-7">
-            에드윈 허블은 외부 은하들을 관측하여 은하들의 <strong>후퇴 속도($v$)</strong>가 은하까지의 <strong>거리($d$)</strong>에 비례한다는 사실을 발견했습니다. 이를 수식으로 나타낸 것이 바로 <strong>허블 법칙</strong>입니다.
+            에드윈 허블은 외부 은하들을 관측하여 은하들의 후퇴 속도(v)가 은하까지의 거리(d)에 비례한다는 사실을 발견했습니다. 이를 수식으로 나타낸 것이 바로 <strong>허블 법칙</strong>입니다.
           </p>
           <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 max-w-md mx-auto my-3 text-center">
             <strong className="text-lg sm:text-xl text-indigo-400 font-mono block">v = H × d</strong>
             <span className="text-[11px] text-slate-400 mt-1 block">
-              v = 후퇴 속도 (km/s) &nbsp;|&nbsp; d = 외부 은하의 거리 (Mpc) &nbsp;|&nbsp; H = 허블 상수 (km/s/Mpc)
+              v = 후퇴 속도 (km/s) | d = 외부 은하의 거리 (Mpc) | H = 허블 상수 (km/s/Mpc)
             </span>
           </div>
         </section>
@@ -983,15 +978,15 @@ function ConceptTab() {
         <section className="space-y-3">
           <h3 className="text-base sm:text-lg font-bold text-slate-200 flex items-center gap-2">
             <span className="w-5 h-5 rounded-md bg-indigo-600/20 text-indigo-400 flex items-center justify-center font-bold text-xs">2</span>
-            적색편이 (Redshift, $z$)
+            적색편이 (Redshift, z)
           </h3>
           <p className="text-xs sm:text-sm text-slate-300 leading-relaxed pl-7">
-            은하가 우리로부터 멀어질 때 방출된 전자기파(빛)의 파장이 길어져 스펙트럼 흡수선이 빨간색 방향으로 이동하는 현상입니다. 이 편이량($\Delta\lambda$)의 원래 파장($\lambda_0$)에 대한 비율을 적색편이량($z$)이라 정의합니다.
+            은하가 우리로부터 멀어질 때 방출된 전자기파(빛)의 파장이 길어져 스펙트럼 흡수선이 빨간색 방향으로 이동하는 현상입니다. 이 편이량(Δλ)의 원래 파장(λ₀)에 대한 비율을 적색편이량(z)이라 정의합니다.
           </p>
           <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 max-w-md mx-auto my-3 text-center">
             <strong className="text-lg sm:text-xl text-amber-400 font-mono block">z = Δλ / λ₀ = v / c</strong>
             <span className="text-[11px] text-slate-400 mt-1 block">
-              Δλ = 파장 변화량 &nbsp;|&nbsp; λ₀ = 고유 파장 &nbsp;|&nbsp; v = 후퇴 속도 &nbsp;|&nbsp; c = 빛의 속도 (300,000 km/s)
+              Δλ = 파장 변화량 | λ₀ = 고유 파장 | v = 후퇴 속도 | c = 빛의 속도 (300,000 km/s)
             </span>
           </div>
         </section>
@@ -1007,14 +1002,14 @@ function ConceptTab() {
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
             <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 text-center">
-              <span className="text-slate-400 text-xs block mb-1">⏰ 우주의 나이 ($T$)</span>
-              <strong className="text-lg text-emerald-400 font-mono">T = 1 / H</strong>
+              <span className="text-slate-400 text-xs block mb-1">⏰ 우주의 나이 (T)</span>
+              <strong className="text-lg text-emerald-400 font-mono">T ≈ 1 / H</strong>
               <p className="text-[10px] text-slate-500 mt-2">허블 상수가 커질수록 우주의 나이는 젊게 계산됩니다.</p>
             </div>
             <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 text-center">
-              <span className="text-slate-400 text-xs block mb-1">🌌 관측 가능한 우주의 크기 ($R$)</span>
-              <strong className="text-lg text-rose-400 font-mono">R = c / H</strong>
-              <p className="text-[10px] text-slate-500 mt-2">후퇴속도가 빛의 속도($c$)와 같아지는 한계 거리를 의미합니다.</p>
+              <span className="text-slate-400 text-xs block mb-1">🌌 관측 가능한 우주의 크기 (R)</span>
+              <strong className="text-lg text-rose-400 font-mono">R ≈ c / H</strong>
+              <p className="text-[10px] text-slate-500 mt-2">후퇴속도가 빛의 속도(c)와 같아지는 한계 거리를 의미합니다.</p>
             </div>
           </div>
         </section>
@@ -1027,7 +1022,7 @@ function ConceptTab() {
           시험을 지배하는 꿀팁!
         </h4>
         <ul className="list-disc pl-4 text-xs text-indigo-300 space-y-1 leading-relaxed">
-          <li><strong>단위 변환 문제:</strong> 문제에서 미터(m), 킬로미터(km), 메가파섹(Mpc) 단위를 혼동하여 출제하는 경우가 많습니다. $1\text{ Mpc} \approx 3.08 \times 10^{19}\text{ km}$ 임을 꼭 확인해 두세요.</li>
+          <li><strong>단위 변환 문제:</strong> 문제에서 미터(m), 킬로미터(km), 메가파섹(Mpc) 단위를 혼동하여 출제하는 경우가 많습니다. 1 Mpc ≈ 3.08 x 10¹⁹ km 임을 꼭 확인해 두세요.</li>
           <li><strong>비율 관계 파악:</strong> "은하 A가 은하 B보다 적색편이가 2배 크다" ➔ 후퇴속도가 2배 빠르다 ➔ 우리로부터 거리가 2배 멀다는 뜻입니다. 공식의 비례 관계를 직관적으로 떠올리는 훈련이 최고입니다!</li>
         </ul>
       </div>
